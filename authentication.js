@@ -1,17 +1,17 @@
 /**
  * Created by vilik on 1.10.2016.
  */
-var config = require("config");
+var config = require("./config");
 var jwt = require("jwt-simple");
 var mysql = require("mysql");
 
-var users = [
-    {
-        id: 1,
-        username: "vili",
-        password: "testpass"
-    }
-];
+
+var connection = mysql.createConnection({
+    host     : config.db_host,
+    user     : config.db_user,
+    password : config.db_password,
+    database : config.db_name
+});
 
 function expiresIn(numDays) {
     var dateObj = new Date();
@@ -19,17 +19,20 @@ function expiresIn(numDays) {
 }
 
 var auth = {
-    login: function (username, password) {
-        for (var user in users) {
-            if (user.username === username && user.password === password) {
+    login: function (username, password, callback) {
+        var loginDetails = [username, password],
+            token = false;
+
+        connection.query("SELECT * FROM User WHERE username = ? AND password = ?", loginDetails, function(err, rows) {
+            if (!err && rows.length > 0) {
                 var expires = expiresIn(14);
-                return jwt.encode({
-                    user: user.id,
+                token = jwt.encode({
+                    user: rows[0].id,
                     exp: expires
                 }, config.token_secret);
             }
-        }
-        return false;
+            callback(token);
+        });
     },
 
     validate: function (token) {
