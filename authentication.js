@@ -41,8 +41,8 @@ var auth = {
                 });
             }
         });
-    }
-    ,
+    },
+
     login: function (username, password, callback) {
         connection.query("SELECT * FROM User WHERE username = ?", username, function (err, rows) {
             if (!err) {
@@ -69,14 +69,17 @@ var auth = {
                             });
                         }
                     });
-
                 } else {
-                    console.log(err.message);
                     callback({
-                        code: 500,
-                        message: err.message // HIDE
+                        code: 401,
+                        message: "Invalid credentials" // HIDE
                     });
                 }
+            } else {
+                callback({
+                    code: 500,
+                    message: err.message
+                });
             }
         });
     },
