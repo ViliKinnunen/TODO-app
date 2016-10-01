@@ -1,0 +1,24 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "Simple TODO-application.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ViliKinnunen/TODO-app.git"
+  },
+  "author": "Vili Kinnunen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ViliKinnunen/TODO-app/issues"
+  },
+  "homepage": "https://github.com/ViliKinnunen/TODO-app#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "jwt-simple": "^0.5.0",
+    "mysql": "^2.11.1"
+  }
+}
