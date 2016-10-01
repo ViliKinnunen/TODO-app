@@ -3,14 +3,15 @@
  */
 var config = require("./config");
 var jwt = require("jwt-simple");
+var bcrypt = require("bcrypt-nodejs");
 var mysql = require("mysql");
 
 
 var connection = mysql.createConnection({
-    host     : config.db_host,
-    user     : config.db_user,
-    password : config.db_password,
-    database : config.db_name
+    host: config.db_host,
+    user: config.db_user,
+    password: config.db_password,
+    database: config.db_name
 });
 
 function expiresIn(numDays) {
@@ -19,19 +20,64 @@ function expiresIn(numDays) {
 }
 
 var auth = {
-    login: function (username, password, callback) {
-        var loginDetails = [username, password],
-            token = false;
-
-        connection.query("SELECT * FROM User WHERE username = ? AND password = ?", loginDetails, function(err, rows) {
-            if (!err && rows.length > 0) {
-                var expires = expiresIn(14);
-                token = jwt.encode({
-                    user: rows[0].id,
-                    exp: expires
-                }, config.token_secret);
+    register: function (username, password, callback) {
+        bcrypt.hash(password, null, null, function (err, hash) {
+            if (!err) {
+                var user = {username: username, password: hash};
+                connection.query("INSERT INTO User SET ?", user, function (err, result) {
+                    if (!err) {
+                        callback(null, result.insertId);
+                    } else {
+                        callback({
+                            code: 500,
+                            message: err.message // HIDE
+                        });
+                    }
+                });
+            } else {
+                callback({
+                    code: 500,
+                    message: err.message // HIDE
+                });
             }
-            callback(token);
+        });
+    }
+    ,
+    login: function (username, password, callback) {
+        connection.query("SELECT * FROM User WHERE username = ?", username, function (err, rows) {
+            if (!err) {
+                if (rows.length === 1) {
+                    bcrypt.compare(password, rows[0].password, function (err, res) {
+                        if (!err) {
+                            if (res) {
+                                var expires = expiresIn(14);
+                                var token = jwt.encode({
+                                    user: rows[0].id,
+                                    exp: expires
+                                }, config.token_secret);
+                                callback(null, token);
+                            } else {
+                                callback({
+                                    code: 401,
+                                    message: "Invalid credentials"
+                                });
+                            }
+                        } else {
+                            callback({
+                                code: 500,
+                                message: err.message // HIDE
+                            });
+                        }
+                    });
+
+                } else {
+                    console.log(err.message);
+                    callback({
+                        code: 500,
+                        message: err.message // HIDE
+                    });
+                }
+            }
         });
     },
 
@@ -50,7 +96,7 @@ var auth = {
                     expired: false
                 };
             }
-        } catch (err){
+        } catch (err) {
             return false;
         }
     }

@@ -22,19 +22,40 @@
         var username = req.body.username || '';
         var password = req.body.password || '';
 
-        auth.login(username, password, function(token) {
-            if (token) {
+        auth.login(username, password, function(err, token) {
+            if (!err) {
                 res.json({
                     token: token
                 });
             } else {
-                res.status(401);
+                res.status(err.code);
                 res.json({
-                    status: 401,
-                    message: "Invalid credentials"
+                    status: err.code,
+                    message: err.message
                 });
             }
         });
+    });
+
+    app.post("/register", function(req, res) {
+        var username = req.body.username || '';
+        var password = req.body.password || '';
+
+        auth.register(username, password, function(err, id) {
+            if (!err) {
+                res.json({
+                    status: 200,
+                    message: "Account created",
+                    id: id
+                });
+            } else {
+                res.status(err.code);
+                res.json({
+                    status: err.code,
+                    message: err.message
+                });
+            }
+        })
     });
 
     app.listen(config.port, function() {
