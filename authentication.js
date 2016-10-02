@@ -4,15 +4,7 @@
 var config = require("./config");
 var jwt = require("jwt-simple");
 var bcrypt = require("bcrypt-nodejs");
-var mysql = require("mysql");
-
-
-var connection = mysql.createConnection({
-    host: config.db_host,
-    user: config.db_user,
-    password: config.db_password,
-    database: config.db_name
-});
+var db = require("./db-connector");
 
 function expiresIn(numDays) {
     var dateObj = new Date();
@@ -30,7 +22,7 @@ var auth = {
             bcrypt.hash(password, null, null, function (err, hash) {
                 if (!err) {
                     var user = {username: username, password: hash};
-                    connection.query("INSERT INTO User SET ?", user, function (err, result) {
+                    db.query("INSERT INTO User SET ?", user, function (err, result) {
                         if (!err) {
                             callback(null, result.insertId);
                         } else {
@@ -56,7 +48,7 @@ var auth = {
     },
 
     login: function (username, password, callback) {
-        connection.query("SELECT * FROM User WHERE username = ?", username, function (err, rows) {
+        db.query("SELECT * FROM User WHERE username = ?", username, function (err, rows) {
             if (!err) {
                 if (rows.length === 1) {
                     bcrypt.compare(password, rows[0].password, function (err, res) {

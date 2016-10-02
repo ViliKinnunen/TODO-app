@@ -5,10 +5,14 @@
 var express = require("express");
 var auth = require("../authentication");
 
+var lists = require("./lists");
+var list = require("./list");
+var reminder = require("./reminder");
+
 var router = express.Router();
 
 router.use(function(req, res, next) {
-    var token = req.query.token;
+    var token = req.query.token || req.body.token;
     if (token) {
         var session = auth.validate(token);
         if (session) {
@@ -38,9 +42,36 @@ router.use(function(req, res, next) {
     }
 });
 
-router.get("/lists", function(req, res) {
-    res.json(["shoppinglist", "santaslist", "blacklist"]);
-});
+/* -------------------------------------------------
+   LISTS
+   - get: view all lists by the user
+   - post: add new list
+---------------------------------------------------- */
+
+router.get("/lists", lists.get);
+router.post("/lists", lists.post);
+
+/* -------------------------------------------------
+ LISTS/:id
+ - get: view list name and reminders
+ - post: add new reminder to the list
+ - delete: delete list
+ - put: rename list
+ ---------------------------------------------------- */
+
+router.get("/lists/:id([0-9]+)", list.get);
+router.post("/lists/:id([0-9]+)", list.post);
+router.delete("/lists/:id([0-9]+)", list.delete);
+router.put("/lists/:id([0-9]+)", list.put);
+
+/* -------------------------------------------------
+ LISTS/:id/:reminder
+ - delete: delete reminder
+ - put: modify reminder
+ ---------------------------------------------------- */
+
+router.delete("/lists/:id([0-9]+)/:reminder([0-9]+)", reminder.delete);
+router.put("/lists/:id([0-9]+)/:reminder([0-9]+)", reminder.put);
 
 module.exports = router;
 

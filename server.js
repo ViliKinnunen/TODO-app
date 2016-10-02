@@ -25,6 +25,8 @@
         auth.login(username, password, function(err, token) {
             if (!err) {
                 res.json({
+                    status: 200,
+                    message: "Success",
                     token: token
                 });
             } else {

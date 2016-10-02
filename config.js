@@ -3,9 +3,9 @@
  */
 module.exports = {
     port: 80,
-    db_host: "localhost",
-    db_user: "username",
-    db_password: "password",
-    db_name: "database",
-    token_secret: "secret"
+    db_host: "46.101.135.218",
+    db_user: "testuser",
+    db_password: "TestPass1234-",
+    db_name: "todo",
+    token_secret: "supersecret"
 };
