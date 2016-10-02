@@ -2,32 +2,34 @@
  * Created by vilik on 1.10.2016.
  */
 
-(function() {
+(function () {
     "use strict";
-    var config = require("./config");
-    var express = require("express");
-    var bodyParser = require('body-parser');
-    var auth = require("./authentication");
+    var config = require("./config"),
+        express = require("express"),
+        bodyParser = require('body-parser'),
+        auth = require("./authentication"),
+        app = express(),
+        apiRouter = require("./api/router");
 
-    var app = express();
-    app.use(bodyParser.urlencoded({extended: false, type: "*/*"}));
-
-    var apiRouter = require("./api/router");
-
-    app.all('/*', function(req, res, next) {
+    // Allow cross-origin requests
+    app.all('/*', function (req, res, next) {
         res.header("Access-Control-Allow-Origin", "%");
         next();
     });
 
+    // Add bodyparser middleware to all requests
+    app.use(bodyParser.urlencoded({extended: false, type: "*/*"}));
+
+    // For client
     app.use(express.static("client"));
 
     app.use("/api", apiRouter);
 
-    app.post("/login", function(req, res) {
+    app.post("/login", function (req, res) {
         var username = req.body.username || '';
         var password = req.body.password || '';
 
-        auth.login(username, password, function(err, token) {
+        auth.login(username, password, function (err, token) {
             if (!err) {
                 res.json({
                     status: 200,
@@ -44,11 +46,11 @@
         });
     });
 
-    app.post("/register", function(req, res) {
+    app.post("/register", function (req, res) {
         var username = req.body.username || '';
         var password = req.body.password || '';
 
-        auth.register(username, password, function(err, id) {
+        auth.register(username, password, function (err, id) {
             if (!err) {
                 res.json({
                     status: 200,
@@ -65,7 +67,7 @@
         })
     });
 
-    app.listen(config.port, function() {
+    app.listen(config.port, function () {
         console.log("App is alive at port " + config.port);
     });
 }());
