@@ -67,10 +67,12 @@ router.put("/lists/:id([0-9]+)", list.put);
 
 /* -------------------------------------------------
  LISTS/:id/:reminder
+
  - delete: delete reminder
  - put: modify reminder
  ---------------------------------------------------- */
 
+router.get("/lists/:id([0-9]+)/:reminder([0-9]+)", reminder.get);
 router.delete("/lists/:id([0-9]+)/:reminder([0-9]+)", reminder.delete);
 router.put("/lists/:id([0-9]+)/:reminder([0-9]+)", reminder.put);
 

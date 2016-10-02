@@ -6,6 +6,29 @@ var escape = require("escape-html");
 var utils = require("./utils");
 
 var requests = {
+    get: function(req, res) {
+        if (req.params.reminder && req.user_id) {
+            var validId = utils.validateId(req.params.reminder);
+            if (validId) {
+                reminder.view(validId, req.user_id, function(err, result) {
+                    if (!err) {
+                        res.json({
+                            status: 200,
+                            message: "Success",
+                            reminder: result
+                        });
+                    } else {
+                        utils.error(res, err.code, err.message);
+                    }
+                });
+            } else {
+                utils.error(res, 400, "Invalid parameters");
+            }
+        } else {
+            utils.error(res, 400, "Missing required parameters");
+        }
+    },
+
     put: function (req, res) {
         if (req.params.id && req.params.reminder && req.user_id && (req.body.name || req.body.priority || req.body.done)) {
             reminder.update(req.body.name, req.body.priority, req.body.done, req.params.reminder, req.user_id, function(err) {
@@ -60,6 +83,35 @@ var reminder = {
         );
     },
 
+    view: function(reminderId, user, callback) {
+        reminder.hasAccess(reminderId, user, function(access) {
+            if (access) {
+                db.query("SELECT * FROM Reminder WHERE id = ?", reminderId, function(err, results) {
+                    if (!err) {
+                        if (results.length > 0) {
+                            callback(false, results[0]);
+                        } else {
+                            callback({
+                                code: 500,
+                                message: "Oops, something went wrong"
+                            });
+                        }
+                    } else {
+                        callback({
+                            code: 500,
+                            message: err.message
+                        });
+                    }
+                });
+            } else {
+                callback({
+                    code: 403,
+                    message: "No access to the list"
+                });
+            }
+        });
+    },
+
     update: function(name, priority, done, reminderId, user, callback) {
         var modifiedReminder = {};
         var nameRegex = /^.{1,140}$/;
@@ -75,7 +127,6 @@ var reminder = {
 
         if (priority) {
             if (utils.validatePriority(priority)) {
-                console.log(utils.validatePriority(priority));
                 modifiedReminder.priority = utils.validatePriority(priority);
             } else {
                 invalidParameters = true;
