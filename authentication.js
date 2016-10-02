@@ -21,26 +21,38 @@ function expiresIn(numDays) {
 
 var auth = {
     register: function (username, password, callback) {
-        bcrypt.hash(password, null, null, function (err, hash) {
-            if (!err) {
-                var user = {username: username, password: hash};
-                connection.query("INSERT INTO User SET ?", user, function (err, result) {
-                    if (!err) {
-                        callback(null, result.insertId);
-                    } else {
-                        callback({
-                            code: 500,
-                            message: err.message // HIDE
-                        });
-                    }
-                });
-            } else {
-                callback({
-                    code: 500,
-                    message: err.message // HIDE
-                });
-            }
-        });
+        var usernameRegex = /^[A-Za-z0-9_\-]{3,20}$/,
+            passwordRegex = /^[^\s]{8,50}$/,
+            usernameValid = username.match(usernameRegex),
+            passwordValid = password.match(passwordRegex);
+
+        if (usernameValid && passwordValid) {
+            bcrypt.hash(password, null, null, function (err, hash) {
+                if (!err) {
+                    var user = {username: username, password: hash};
+                    connection.query("INSERT INTO User SET ?", user, function (err, result) {
+                        if (!err) {
+                            callback(null, result.insertId);
+                        } else {
+                            callback({
+                                code: 500,
+                                message: err.message // HIDE
+                            });
+                        }
+                    });
+                } else {
+                    callback({
+                        code: 500,
+                        message: err.message // HIDE
+                    });
+                }
+            });
+        } else {
+            callback({
+                code: 400,
+                message: "Username and/or password didn't meet requirements"
+            })
+        }
     },
 
     login: function (username, password, callback) {

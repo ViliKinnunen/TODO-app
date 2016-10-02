@@ -7,7 +7,6 @@ var auth = require("../authentication");
 
 var router = express.Router();
 
-
 router.use(function(req, res, next) {
     var token = req.query.token;
     if (token) {
