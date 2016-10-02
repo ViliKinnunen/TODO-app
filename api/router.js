@@ -12,7 +12,8 @@ var reminder = require("./reminder");
 var router = express.Router();
 
 router.use(function(req, res, next) {
-    var token = req.query.token || req.body.token;
+    var token = req.query.token || req.body.token || req.headers['x-access-token'];
+
     if (token) {
         var session = auth.validate(token);
         if (session) {

@@ -13,7 +13,7 @@ var requests = {
             if (listId) {
                 list.getName(listId, req.user_id, function (err, name) {
                     if (!err) {
-                        action.getReminders(listId, req.user_id, function (err, reminders) {
+                        list.getReminders(listId, req.user_id, function (err, reminders) {
                             if (!err) {
                                 res.json({
                                     status: 200,
@@ -168,7 +168,7 @@ var list = {
     addReminder: function (name, priority, listId, user, callback) {
         var nameRegex = /^.{1,140}$/;
         if (name.match(nameRegex)) {
-            list.hasAccess(list, user, function(access) {
+            list.hasAccess(listId, user, function(access) {
                 if (access) {
                     db.query("INSERT INTO Reminder (name, priority, list) VALUES (?, ?, ?)",
                         [escape(name), priority, listId],
