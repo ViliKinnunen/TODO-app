@@ -9,7 +9,8 @@
         bodyParser = require('body-parser'),
         auth = require("./authentication"),
         app = express(),
-        apiRouter = require("./api/router");
+        apiRouter = require("./api/router"),
+        utils = require("./api/utils");
 
     // Allow cross-origin requests
     app.all('/*', function (req, res, next) {
@@ -23,8 +24,10 @@
     // For client
     app.use(express.static("client"));
 
+    // Handler for all API routes
     app.use("/api", apiRouter);
 
+    // LOGIN Method
     app.post("/login", function (req, res) {
         var username = req.body.username || '';
         var password = req.body.password || '';
@@ -37,15 +40,12 @@
                     token: token
                 });
             } else {
-                res.status(err.code);
-                res.json({
-                    status: err.code,
-                    message: err.message
-                });
+                utils.error(res, err.code, err.message);
             }
         });
     });
 
+    // REGISTER Method
     app.post("/register", function (req, res) {
         var username = req.body.username || '';
         var password = req.body.password || '';
@@ -58,11 +58,7 @@
                     id: id
                 });
             } else {
-                res.status(err.code);
-                res.json({
-                    status: err.code,
-                    message: err.message
-                });
+                utils.error(res, err.code, err.message);
             }
         })
     });
