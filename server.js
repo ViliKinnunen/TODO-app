@@ -1,19 +1,18 @@
 /**
  * Created by vilik on 1.10.2016.
  */
-
 (function () {
     "use strict";
     var config = require("./config"),
         express = require("express"),
-        bodyParser = require('body-parser'),
+        bodyParser = require("body-parser"),
         auth = require("./authentication"),
         app = express(),
         apiRouter = require("./api/router"),
         utils = require("./api/utils");
 
     // Allow cross-origin requests
-    app.all('/*', function (req, res, next) {
+    app.all("/*", function (req, res, next) {
         res.header("Access-Control-Allow-Origin", "%");
         next();
     });
@@ -29,8 +28,8 @@
 
     // LOGIN Method
     app.post("/login", function (req, res) {
-        var username = req.body.username || '';
-        var password = req.body.password || '';
+        var username = req.body.username || "";
+        var password = req.body.password || "";
 
         auth.login(username, password, function (err, token) {
             if (!err) {
@@ -47,8 +46,8 @@
 
     // REGISTER Method
     app.post("/register", function (req, res) {
-        var username = req.body.username || '';
-        var password = req.body.password || '';
+        var username = req.body.username || "";
+        var password = req.body.password || "";
 
         auth.register(username, password, function (err, id) {
             if (!err) {
@@ -60,7 +59,7 @@
             } else {
                 utils.error(res, err.code, err.message);
             }
-        })
+        });
     });
 
     app.listen(config.port, function () {

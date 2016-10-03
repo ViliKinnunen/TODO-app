@@ -1,18 +1,20 @@
 /**
  * Created by vilik on 1.10.2016.
  */
-var config = require("./config");
-var jwt = require("jwt-simple");
-var bcrypt = require("bcrypt-nodejs");
-var db = require("./db-connector");
+var config = require("./config"),
+    jwt = require("jwt-simple"),
+    bcrypt = require("bcrypt-nodejs"),
+    db = require("./db-connector");
 
 function expiresIn(numDays) {
+    "use strict";
     var dateObj = new Date();
     return dateObj.setDate(dateObj.getDate() + numDays);
 }
 
 var auth = {
     register: function (username, password, callback) {
+        "use strict";
         var usernameRegex = /^[A-Za-z0-9_\-]{3,20}$/,
             passwordRegex = /^[^\s]{8,50}$/,
             usernameValid = username.match(usernameRegex),
@@ -43,11 +45,12 @@ var auth = {
             callback({
                 code: 400,
                 message: "Username and/or password didn't meet requirements"
-            })
+            });
         }
     },
 
     login: function (username, password, callback) {
+        "use strict";
         db.query("SELECT * FROM User WHERE username = ?", username, function (err, rows) {
             if (!err) {
                 if (rows.length === 1) {
@@ -89,6 +92,7 @@ var auth = {
     },
 
     validate: function (token) {
+        "use strict";
         try {
             var decoded = jwt.decode(token, config.token_secret);
 
