@@ -5,9 +5,10 @@
     "use strict";
     var db = require("../db-connector"),
         escape = require("escape-html"),
-        utils = require("./utils");
+        utils = require("./utils"),
+        actions;
 
-    var actions = {
+    actions = {
         add: function (name, user, callback) {
             var regexName = /^.{2,50}$/;
 

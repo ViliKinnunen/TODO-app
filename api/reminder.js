@@ -5,9 +5,10 @@
     "use strict";
     var db = require("../db-connector"),
         escape = require("escape-html"),
-        utils = require("./utils");
+        utils = require("./utils"),
+        reminder;
 
-    var reminder = {
+    reminder = {
         hasAccess: function (reminderId, user, callback) {
             db.query("SELECT * FROM Reminder INNER JOIN List ON List.id = Reminder.list WHERE Reminder.id = ? AND List.user = ?", [reminderId, user], function (err, results) {
                 if (!err && results.length === 1) {

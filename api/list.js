@@ -5,9 +5,10 @@
     "use strict";
     var db = require("../db-connector"),
         escape = require("escape-html"),
-        utils = require("./utils");
+        utils = require("./utils"),
+        list;
 
-    var list = {
+    list = {
         hasAccess: function (listId, user, callback) {
             db.query("SELECT * FROM List WHERE id = ? AND user = ?", [listId, user], function (err, results) {
                 if (!err && results.length === 1) {
@@ -19,7 +20,7 @@
         },
 
         getName: function (listId, user, callback) {
-            list.hasAccess(listId, user, function(access) {
+            list.hasAccess(listId, user, function (access) {
                 if (access) {
                     db.query("SELECT * FROM List WHERE id = ?", listId, function (err, results) {
                         if (!err && results.length === 1) {
@@ -41,7 +42,7 @@
         },
 
         getReminders: function (listId, user, callback) {
-            list.hasAccess(listId, user, function(access) {
+            list.hasAccess(listId, user, function (access) {
                 if (access) {
                     db.query("SELECT id, name, priority, done FROM Reminder WHERE list = ?", listId, function (err, results) {
                         if (!err) {
@@ -65,7 +66,7 @@
         addReminder: function (name, priority, listId, user, callback) {
             var nameRegex = /^.{1,140}$/;
             if (name.match(nameRegex)) {
-                list.hasAccess(listId, user, function(access) {
+                list.hasAccess(listId, user, function (access) {
                     if (access) {
                         db.query("INSERT INTO Reminder (name, priority, list) VALUES (?, ?, ?)", [escape(name), priority, listId], function (err, results) {
                             if (!err) {
