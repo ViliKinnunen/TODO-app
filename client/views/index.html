@@ -1,0 +1,21 @@
+<div class="alert alert-danger" data-ng-show="error.visible">
+    <strong>Error {{ error.code }}</strong> {{ error.message }}
+</div>
+<h1>Welcome!</h1>
+<div data-ng-repeat="list in lists">
+    <div class="panel panel-default">
+        <div class="panel-heading">{{ list.name }}</div>
+        <div class="panel-body" data-ng-repeat="reminder in list.reminders">
+            {{ reminder.name }}
+        </div>
+    </div>
+</div>
+
+<form data-ng-submit="addList()">
+    <div class="input-group">
+        <input type="text" class="form-control" data-ng-model="newlist" placeholder="Name for new list...">
+        <span class="input-group-btn">
+            <input type="submit" class="btn btn-primary" value="Create new list">
+        </span>
+    </div>
+</form>

@@ -1,0 +1,28 @@
+<div class="alert alert-danger" data-ng-show="error.visible">
+    <strong>Error {{ error.code }}</strong> {{ error.message }}
+</div>
+<h1>Register</h1>
+<p>Username has to be at least 3 characters long and can contain normal characters, numbers, dashes and underscores.</p>
+<p>Password has to be at least 8 characters long and can contain any characters except whitespace.</p>
+<form data-ng-submit="register()">
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input required pattern="^[A-Za-z0-9_\-]{3,20}$" type="text" class="form-control" id="username" ng-model="credentials.username"/>
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input required pattern="^[^\s]{8,50}$" type="password" class="form-control" id="password" ng-model="credentials.password"/>
+    </div>
+    <br>
+    <input type="submit" class="btn btn-primary" value="Submit"> <span id="loading"><i class='fa fa-spinner fa-spin'></i> Processing request...</span>
+</form>
+<style>
+    .ng-invalid.ng-touched {
+        border: 1px solid #d20016;
+        color: #d20016;
+    }
+    #loading {
+        display: none;
+        margin-left: 20px;
+    }
+</style>

@@ -1,10 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-ng-app="todoApp" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+
+    <title>TODO</title>
+
+    <script src="scripts/angular.min.js"></script>
+    <script src="scripts/angular-resource.min.js"></script>
+    <script src="scripts/angular-route.min.js"></script>
+    <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/bootstrap.min.js"></script>
+    <script src="scripts/cookiejar.js"></script>
+    <script src="scripts/app.js"></script>
 </head>
 <body>
-
+<nav class="navbar navbar- navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#/">TODO</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul id="navlist" class="nav navbar-right navbar-nav">
+                <li data-ng-hide="token">
+                    <a href="#/login">Login</a>
+                </li>
+                <li data-ng-hide="token">
+                    <a href="#/register">Register</a>
+                </li>
+                <li data-ng-show="token">
+                    <a href="#/logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container" data-ng-view=""></div>
 </body>
 </html>

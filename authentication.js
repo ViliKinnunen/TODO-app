@@ -30,14 +30,14 @@
                             } else {
                                 callback({
                                     code: 500,
-                                    message: err.message // HIDE
+                                    message: "Username is already in use"
                                 });
                             }
                         });
                     } else {
                         callback({
                             code: 500,
-                            message: err.message // HIDE
+                            message: "Couldn't encrypt the password"
                         });
                     }
                 });

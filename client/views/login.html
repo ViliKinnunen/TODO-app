@@ -1,0 +1,26 @@
+<div class="alert alert-danger" data-ng-show="error.visible">
+    <strong>Error {{ error.code }}</strong> {{ error.message }}
+</div>
+<h1>Login</h1>
+<form data-ng-submit="login()">
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input required type="text" class="form-control" id="username" ng-model="credentials.username"/>
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input required type="password" class="form-control" id="password" ng-model="credentials.password"/>
+    </div>
+    <br>
+    <input type="submit" class="btn btn-primary" value="Submit"> <span id="loading"><i class='fa fa-spinner fa-spin'></i> Logging in</span>
+</form>
+<style>
+    .ng-invalid.ng-touched {
+        border: 1px solid #d20016;
+        color: #d20016;
+    }
+    #loading {
+        display: none;
+        margin-left: 20px;
+    }
+</style>
