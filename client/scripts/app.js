@@ -70,7 +70,7 @@
 
     app.factory("ListService", ["$resource", "$rootScope", function ($resource, $rootScope) {
         var search = "http://localhost/api/lists/:path";
-        var result = $resource(search);
+        var result = $resource(search, null, { put: { method: "put"}});
         return {
             getAll: function (callback) {
                 var root = result.get({path: ""}, function () {
@@ -99,6 +99,13 @@
                 }, function (err) {
                     callback(err.data);
                 });
+            },
+            edit: function (id, name, callback) {
+                var root = result.put({path: id}, "name="+name, function () {
+                    callback();
+                }, function (err) {
+                    callback(err.data);
+                });
             }
         };
     }]);
@@ -123,6 +130,13 @@
             },
             toggle: function(done, reminderId, listId, callback) {
                 var root = result.put({list: listId, reminder: reminderId}, "done="+done, function () {
+                    callback(null);
+                }, function (err) {
+                    callback(err.data);
+                });
+            },
+            edit: function (name, priority, reminderId, listId, callback) {
+                var root = result.put({list: listId, reminder: reminderId}, "name="+name+"&priority="+priority, function () {
                     callback(null);
                 }, function (err) {
                     callback(err.data);
@@ -267,6 +281,75 @@
         $scope.toggleReminder = function (reminder, listId) {
             ReminderService.toggle(reminder.done, reminder.id, listId, function (err) {
                 if (err) {
+                    $scope.error = {
+                        visible: true,
+                        code: err.code,
+                        message: err.message
+                    };
+                }
+            });
+        };
+
+        $scope.initializeListRenaming = function (listId) {
+            $scope.lists.forEach(function(list) {
+                if (list.id === listId) {
+                    $scope.listToBeRenamed = {
+                        id: list.id,
+                        name: list.name
+                    };
+                }
+            });
+        };
+
+        $scope.initializeReminderEdit = function (reminderId, listId) {
+            $scope.lists.forEach(function(list) {
+                if (list.id === listId) {
+                    list.reminders.forEach(function (reminder) {
+                        if (reminder.id === reminderId) {
+                            $scope.reminderToBeModified = {
+                                id: reminder.id,
+                                name: reminder.name,
+                                priority: reminder.priority,
+                                list: list.id
+                            };
+                        }
+                    });
+                }
+            });
+        };
+
+        $scope.updateReminder = function () {
+            ReminderService.edit($scope.reminderToBeModified.name, $scope.reminderToBeModified.priority, $scope.reminderToBeModified.id, $scope.reminderToBeModified.list, function (err) {
+                if (!err) {
+                    $scope.lists.forEach(function(list) {
+                        if (list.id === $scope.reminderToBeModified.list) {
+                            list.reminders.forEach(function (reminder) {
+                                if (reminder.id === $scope.reminderToBeModified.id) {
+                                    reminder.name = $scope.reminderToBeModified.name;
+                                    reminder.priority = $scope.reminderToBeModified.priority
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    $scope.error = {
+                        visible: true,
+                        code: err.code,
+                        message: err.message
+                    };
+                }
+            })
+        };
+
+        $scope.updateListName = function () {
+            ListService.edit($scope.listToBeRenamed.id, $scope.listToBeRenamed.name, function (err) {
+                if (!err) {
+                    $scope.lists.forEach(function(list) {
+                        if (list.id === $scope.listToBeRenamed.id) {
+                            list.name = $scope.listToBeRenamed.name;
+                        }
+                    });
+                } else {
                     $scope.error = {
                         visible: true,
                         code: err.code,

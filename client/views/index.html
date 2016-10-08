@@ -17,7 +17,7 @@
         <div class="panel-heading clearfix">
             <span data-toggle="collapse" data-target="#list-{{list.id}}" class="pull-left panel-title">{{ list.name }}</span>
             <div class="btn-group pull-right">
-                <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#listEdit">Modify</button>
+                <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#listEdit" data-ng-click="initializeListRenaming(list.id)">Modify</button>
                 <button class="btn btn-default btn-sm" data-ng-click="removeList(list.id)">Delete</button>
             </div>
         </div>
@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-xs-3">
                     <div class="btn-group pull-right">
-                        <button class="btn btn-xs btn-default">Modify</button>
+                        <button class="btn btn-xs btn-default" data-toggle="modal" data-target="#reminderEdit" data-ng-click="initializeReminderEdit(reminder.id, list.id)">Modify</button>
                         <button class="btn btn-xs btn-default" data-ng-click="removeReminder(reminder.id, list.id)">
                             Delete
                         </button>
@@ -60,6 +60,7 @@
         </div>
     </div>
 </div>
+
 <div id="listEdit" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -67,14 +68,39 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Edit list</h4>
             </div>
-            <form data-ng-submit="submitReminderEdit()">
+            <form>
                 <div class="modal-body">
-                    <input type="text" class="form-control" data-ng-model="reminderEditName"
-                           placeholder="New name for the list">
+                    <label for="listRename">Name:</label><br/>
+                    <input type="text" id="listRename" class="form-control" data-ng-model="listToBeRenamed.name">
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" data-dismiss="modal">Save</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Save" data-ng-click="updateListName()"/>
+
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel"/>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="reminderEdit" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit reminder</h4>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <label for="reminderRename">Name:</label><br/>
+                    <input type="text" id="reminderRename" class="form-control" data-ng-model="reminderToBeModified.name"><br/>
+                    <div class="form-group">
+                        <label for="reminderPriority">Priority:</label><br/>
+                        <input class="form-control" id="reminderPriority" type="number" min="1" max="10" data-ng-model="reminderToBeModified.priority">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" data-dismiss="modal" value="Save" data-ng-click="updateReminder()"/>
+                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel"/>
                 </div>
             </form>
         </div>
