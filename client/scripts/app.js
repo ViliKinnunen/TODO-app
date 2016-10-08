@@ -75,6 +75,7 @@
             getAll: function (callback) {
                 var root = result.get({path: ""}, function () {
                     root.lists.forEach(function(value, index) {
+                        root.lists[index].reminders = [];
                         var reminders = result.get({path: value.id}, function () {
                             root.lists[index].reminders = reminders.reminders;
                         });
@@ -87,6 +88,41 @@
             },
             addNew: function (name, callback) {
                 var root = result.save({path: ""}, "name="+name, function () {
+                    callback(null, root.list_id);
+                }, function (err) {
+                    callback(err.data);
+                });
+            },
+            remove: function (id, callback) {
+                var root = result.delete({path: id}, function () {
+                    callback();
+                }, function (err) {
+                    callback(err.data);
+                });
+            }
+        };
+    }]);
+
+    app.factory("ReminderService", ["$resource", "$rootScope", function ($resource, $rootScope) {
+        var search = "http://localhost/api/lists/:list/:reminder";
+        var result = $resource(search, null, { put: { method: "put"}});
+        return {
+            addNew: function (name, listId, priority, callback) {
+                var root = result.save({list: listId, reminder: ""}, "name="+name+"&priority="+priority, function () {
+                    callback(null, root.reminder_id);
+                }, function (err) {
+                    callback(err.data);
+                });
+            },
+            remove: function(reminderId, listId, callback) {
+                var root = result.delete({list: listId, reminder: reminderId}, function () {
+                    callback(null);
+                }, function (err) {
+                    callback(err.data);
+                });
+            },
+            toggle: function(done, reminderId, listId, callback) {
+                var root = result.put({list: listId, reminder: reminderId}, "done="+done, function () {
                     callback(null);
                 }, function (err) {
                     callback(err.data);
@@ -95,7 +131,8 @@
         };
     }]);
 
-    app.controller("indexCtrl", function ($scope, AuthService, ListService, $rootScope, $http) {
+    app.controller("indexCtrl", function ($scope, AuthService, ListService, ReminderService, $rootScope, $http) {
+        $scope.remindernames = {};
         $scope.error = {
             visible: false,
             code: 200,
@@ -115,6 +152,7 @@
             ListService.getAll(function (err, lists) {
                 if (!err) {
                     $scope.lists = lists;
+                    $scope.error.visible = false;
                 } else {
                     if (err.message === "Token expired") {
                         location.href = "#/login";
@@ -126,15 +164,21 @@
                         };
                     }
                 }
-            })
+            });
         };
 
         $scope.addList = function () {
-            if ($scope.newlist.match(/^.{2,50}$/)) {
-                ListService.addNew($scope.newlist, function (err) {
+            if ($scope.newlist !== undefined && $scope.newlist.match(/^.{2,50}$/)) {
+                ListService.addNew($scope.newlist, function (err, listId) {
                     if (!err) {
-                        $scope.updateLists();
+                        $scope.remindernames[listId] = "";
+                        $scope.lists.push({
+                            id: listId,
+                            name: $scope.newlist,
+                            reminders: []
+                        });
                         $scope.newlist = "";
+                        $scope.error.visible = false;
                     } else {
                         $scope.error = {
                             visible: true,
@@ -150,6 +194,86 @@
                     message: "List name has to be 2 - 50 characters long"
                 };
             }
+        };
+
+        $scope.addReminder = function (listId) {
+            if ($scope.remindernames[listId]) {
+                ReminderService.addNew($scope.remindernames[listId], listId, 1, function (err, reminderId) {
+                    if (!err) {
+                        $scope.lists.forEach(function (value, index) {
+                            if (value.id === listId) {
+                                $scope.lists[index].reminders.push({
+                                    id: reminderId,
+                                    name: $scope.remindernames[listId],
+                                    priority: 1,
+                                    done: 0
+                                });
+                            }
+                        });
+
+                        $scope.remindernames[listId] = "";
+                        $scope.error.visible = false;
+                    } else {
+                        $scope.error = {
+                            visible: true,
+                            code: err.code,
+                            message: err.message
+                        };
+                    }
+                });
+            }
+        };
+
+        $scope.removeList = function (listId) {
+            ListService.remove(listId, function(err) {
+                if (!err) {
+                    $scope.lists.forEach(function(list, index) {
+                        if (list.id === listId) {
+                            $scope.lists.splice(index, 1);
+                        }
+                    });
+                } else {
+                    $scope.error = {
+                        visible: true,
+                        code: err.code,
+                        message: err.message
+                    };
+                }
+            });
+        };
+
+        $scope.removeReminder = function(reminderId, listId) {
+            ReminderService.remove(reminderId, listId, function (err) {
+                if (!err) {
+                    $scope.lists.forEach(function(list, index) {
+                        if (list.id === listId) {
+                            $scope.lists[index].reminders.forEach(function(reminder, reminderIndex, reminders) {
+                                if (reminder.id === reminderId) {
+                                    reminders.splice(reminderIndex, 1);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    $scope.error = {
+                        visible: true,
+                        code: err.code,
+                        message: err.message
+                    };
+                }
+            });
+        };
+
+        $scope.toggleReminder = function (reminder, listId) {
+            ReminderService.toggle(reminder.done, reminder.id, listId, function (err) {
+                if (err) {
+                    $scope.error = {
+                        visible: true,
+                        code: err.code,
+                        message: err.message
+                    };
+                }
+            });
         };
 
         $scope.updateLists();
@@ -238,5 +362,8 @@
     app.controller("logoutCtrl", function ($rootScope, AuthService) {
         AuthService.logout();
         $rootScope.token = false;
+        setTimeout(function() {
+            location.href="#/login";
+        }, 2000);
     });
 }());

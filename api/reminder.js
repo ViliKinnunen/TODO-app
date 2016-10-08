@@ -70,7 +70,7 @@
             }
 
             if (done) {
-                if (utils.validateDone(done)) {
+                if (utils.validateDone(done) === 1 || utils.validateDone(done) === 0) {
                     modifiedReminder.done = utils.validateDone(done);
                 } else {
                     invalidParameters = true;

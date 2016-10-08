@@ -32,7 +32,7 @@
             }
         },
         get: function (user, callback) {
-            db.query("SELECT * FROM List WHERE ?", {user: user}, function (err, results) {
+            db.query("SELECT id, name FROM List WHERE ?", {user: user}, function (err, results) {
                 if (!err) {
                     callback(null, results);
                 } else {

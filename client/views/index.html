@@ -1,21 +1,94 @@
 <div class="alert alert-danger" data-ng-show="error.visible">
     <strong>Error {{ error.code }}</strong> {{ error.message }}
 </div>
-<h1>Welcome!</h1>
-<div data-ng-repeat="list in lists">
-    <div class="panel panel-default">
-        <div class="panel-heading">{{ list.name }}</div>
-        <div class="panel-body" data-ng-repeat="reminder in list.reminders">
-            {{ reminder.name }}
-        </div>
-    </div>
-</div>
 
-<form data-ng-submit="addList()">
+<h1>Your lists</h1>
+<form class="add-list" data-ng-submit="addList()">
     <div class="input-group">
-        <input type="text" class="form-control" data-ng-model="newlist" placeholder="Name for new list...">
+        <input required type="text" class="form-control" data-ng-model="newlist" placeholder="Name for new list...">
         <span class="input-group-btn">
             <input type="submit" class="btn btn-primary" value="Create new list">
         </span>
     </div>
 </form>
+<span id="loading"><i class='fa fa-spinner fa-spin'></i> Processing your request...</span>
+<div data-ng-repeat="list in lists">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <span data-toggle="collapse" data-target="#list-{{list.id}}" class="pull-left panel-title">{{ list.name }}</span>
+            <div class="btn-group pull-right">
+                <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#listEdit">Modify</button>
+                <button class="btn btn-default btn-sm" data-ng-click="removeList(list.id)">Delete</button>
+            </div>
+        </div>
+        <div id="list-{{list.id}}" class="panel-body collapse">
+            <div data-ng-if="list.reminders.length > 0" class="row reminder reminder-header">
+                <div class="col-xs-1">Done</div>
+                <div class="col-xs-7">Name</div>
+                <div class="col-xs-1">Priority</div>
+            </div>
+            <div class="row reminder" data-ng-repeat="reminder in list.reminders | orderBy: 'name'">
+                <div class="col-xs-1">
+                    <input id="{{reminder.id}}-checkbox" data-ng-change="toggleReminder(reminder, list.id)"
+                           type="checkbox" data-ng-model="reminder.done" data-ng-true-value="1"
+                           data-ng-false-value="0"/>
+                </div>
+                <div class="col-xs-7">
+                    <label for="{{reminder.id}}-checkbox">{{ reminder.name }}</label>
+                </div>
+                <div class="col-xs-1">
+                    {{ reminder.priority }}
+                </div>
+                <div class="col-xs-3">
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-xs btn-default">Modify</button>
+                        <button class="btn btn-xs btn-default" data-ng-click="removeReminder(reminder.id, list.id)">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <form class="new-reminder" data-ng-submit="addReminder(list.id)">
+                <div class="input-group">
+                    <input required type="text" class="form-control" data-ng-model="remindernames[list.id]"
+                           placeholder="Name for the note">
+                    <span class="input-group-btn">
+                    <input type="submit" class="btn btn-primary" value="Add note">
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="listEdit" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Edit list</h4>
+            </div>
+            <form data-ng-submit="submitReminderEdit()">
+                <div class="modal-body">
+                    <input type="text" class="form-control" data-ng-model="reminderEditName"
+                           placeholder="New name for the list">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<style>
+    #loading {
+        display: none;
+    }
+
+    .add-list {
+        margin-bottom: 20px;
+    }
+    .panel-title {
+        cursor: pointer;
+    }
+</style>
