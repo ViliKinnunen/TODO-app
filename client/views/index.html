@@ -2,7 +2,7 @@
     <strong>Error {{ error.code }}</strong> {{ error.message }}
 </div>
 
-<h1>Your lists</h1>
+<h1 class="sortable" data-ng-click="sortLists()">Your lists</h1>
 <form class="add-list" data-ng-submit="addList()">
     <div class="input-group">
         <input required type="text" class="form-control" data-ng-model="newlist" placeholder="Name for new list...">
@@ -12,7 +12,7 @@
     </div>
 </form>
 <span id="loading"><i class='fa fa-spinner fa-spin'></i> Processing your request...</span>
-<div data-ng-repeat="list in lists">
+<div data-ng-repeat="list in lists | orderBy:'name':sortListsReverse">
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
             <span data-toggle="collapse" data-target="#list-{{list.id}}" class="pull-left panel-title">{{ list.name }}</span>
@@ -21,13 +21,13 @@
                 <button class="btn btn-default btn-sm" data-ng-click="removeList(list.id)">Delete</button>
             </div>
         </div>
-        <div id="list-{{list.id}}" class="panel-body collapse">
+        <div id="list-{{list.id}}" class="panel-body collapse {{list.open ? 'in' : ''}}">
             <div data-ng-if="list.reminders.length > 0" class="row reminder reminder-header">
-                <div class="col-xs-1">Done</div>
-                <div class="col-xs-7">Name</div>
-                <div class="col-xs-1">Priority</div>
+                <div class="col-xs-1 sortable" data-ng-click="sortReminders('done')">Done</div>
+                <div class="col-xs-7 sortable" data-ng-click="sortReminders('name')">Name</div>
+                <div class="col-xs-1 sortable" data-ng-click="sortReminders('priority')">Priority</div>
             </div>
-            <div class="row reminder" data-ng-repeat="reminder in list.reminders | orderBy: 'name'">
+            <div class="row reminder" data-ng-repeat="reminder in list.reminders | orderBy:sortRemindersBy:sortRemindersReverse">
                 <div class="col-xs-1">
                     <input id="{{reminder.id}}-checkbox" data-ng-change="toggleReminder(reminder, list.id)"
                            type="checkbox" data-ng-model="reminder.done" data-ng-true-value="1"
@@ -92,10 +92,10 @@
             <form>
                 <div class="modal-body">
                     <label for="reminderRename">Name:</label><br/>
-                    <input type="text" id="reminderRename" class="form-control" data-ng-model="reminderToBeModified.name"><br/>
+                    <input required type="text" id="reminderRename" class="form-control" data-ng-model="reminderToBeModified.name"><br/>
                     <div class="form-group">
                         <label for="reminderPriority">Priority:</label><br/>
-                        <input class="form-control" id="reminderPriority" type="number" min="1" max="10" data-ng-model="reminderToBeModified.priority">
+                        <input required class="form-control" id="reminderPriority" type="number" min="1" max="10" data-ng-model="reminderToBeModified.priority">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -115,6 +115,9 @@
         margin-bottom: 20px;
     }
     .panel-title {
+        cursor: pointer;
+    }
+    .sortable {
         cursor: pointer;
     }
 </style>
