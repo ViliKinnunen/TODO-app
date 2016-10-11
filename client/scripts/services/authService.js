@@ -4,7 +4,7 @@
 (function () {
     "use strict";
     angular.module("todoApp").factory("AuthService", ["$resource", function ($resource, $rootScope) {
-        var search = "http://localhost/:path";
+        var search = "http://46.101.135.218/:path";
         var result = $resource(search);
         return {
             getToken: function () {

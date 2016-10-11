@@ -4,7 +4,7 @@
 (function () {
     "use strict";
     angular.module("todoApp").factory("ReminderService", ["$resource", "$rootScope", function ($resource, $rootScope) {
-        var search = "http://localhost/api/lists/:list/:reminder";
+        var search = "http://46.101.135.218/api/lists/:list/:reminder";
         var result = $resource(search, null, { put: { method: "put"}});
         return {
             addNew: function (name, listId, priority, callback) {

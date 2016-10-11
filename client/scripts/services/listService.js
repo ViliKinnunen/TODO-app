@@ -4,7 +4,7 @@
 (function () {
     "use strict";
     angular.module("todoApp").factory("ListService", ["$resource", "$rootScope", function ($resource, $rootScope) {
-        var search = "http://localhost/api/lists/:path";
+        var search = "http://46.101.135.218/api/lists/:path";
         var result = $resource(search, null, { put: { method: "put"}});
         return {
             getAll: function (callback) {
