@@ -8,33 +8,22 @@
 
     var connection;
 
-    function handleDisconnect () {
+    function connect() {
         connection = mysql.createConnection({
             host: config.db_host,
             user: config.db_user,
             password: config.db_password,
             database: config.db_name
-        });
 
-        connection.connect(function (err) {
-            if (err) {
-                console.log("Error connecting to db:", err);
-                setTimeout(handleDisconnect, 1000);
-            }
-        });
-
-        connection.on("error", function (err) {
-            console.log("DB error:", err);
-
-            if (err.code === "PROTOCOL_CONNECTION_LOST") {
-                handleDisconnect();
-            } else {
-                throw err;
-            }
         });
     }
 
-    handleDisconnect();
+    connect();
+
+    setInterval(function () {
+        connection.end();
+        connect();
+    }, 1000*60*60*5);
 
     module.exports = connection;
 }());
