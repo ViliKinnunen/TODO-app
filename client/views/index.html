@@ -18,7 +18,7 @@
             <span class="pull-left panel-title">{{ list.name }}</span>
             <div class="btn-group pull-right">
                 <button class="btn btn-default btn-sm" data-ng-click="initializeListRenaming(list.id); toggleModal('listEdit'); $event.stopPropagation();">Modify</button>
-                <button class="btn btn-default btn-sm" data-ng-click="removeList(list.id); $event.stopPropagation();">Delete</button>
+                <button class="btn btn-danger btn-sm" data-ng-click="removeList(list.id); $event.stopPropagation();">Delete</button>
             </div>
         </div>
         <div id="list-{{list.id}}" class="panel-body{{list.open ? '' : ' collapse'}}">
@@ -42,7 +42,7 @@
                 <div class="col-xs-3">
                     <div class="btn-group pull-right">
                         <button class="btn btn-xs btn-default" data-toggle="modal" data-target="#reminderEdit" data-ng-click="initializeReminderEdit(reminder.id, list.id)">Modify</button>
-                        <button class="btn btn-xs btn-default" data-ng-click="removeReminder(reminder.id, list.id)">
+                        <button class="btn btn-xs btn-danger" data-ng-click="removeReminder(reminder.id, list.id)">
                             Delete
                         </button>
                     </div>
@@ -110,7 +110,6 @@
     #loading {
         display: none;
     }
-
     .add-list {
         margin-bottom: 20px;
     }
