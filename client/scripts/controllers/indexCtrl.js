@@ -29,6 +29,14 @@
             $scope.sortListsReverse = !$scope.sortListsReverse;
         };
 
+        $scope.toggleList = function (listId) {
+            $("#list-"+listId).slideToggle();
+        };
+
+        $scope.toggleModal = function (modalId) {
+            $("#"+modalId).modal("show");
+        };
+
         $http.defaults.headers.common['x-access-token']= $rootScope.token;
 
         $scope.updateLists = function() {

@@ -3,13 +3,26 @@
  */
 (function () {
     "use strict";
-    var db = require("../db-connector"),
-        escape = require("escape-html"),
+    var escape = require("escape-html"),
         utils = require("./utils"),
-        actions;
+        actions,
+        dbConnector = require("../db-connector"),
+        db;
+
+    function updateConnection () {
+        dbConnector.getConnection(function (conn) {
+            if (conn != null) {
+                db = conn;
+            }
+        });
+    }
+
+    updateConnection();
+
 
     actions = {
         add: function (name, user, callback) {
+            updateConnection();
             var regexName = /^.{2,50}$/;
 
             if (name.match(regexName)) {
@@ -32,6 +45,7 @@
             }
         },
         get: function (user, callback) {
+            updateConnection();
             db.query("SELECT id, name FROM List WHERE ?", {user: user}, function (err, results) {
                 if (!err) {
                     callback(null, results);

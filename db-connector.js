@@ -6,24 +6,26 @@
     var config = require("./config");
     var mysql = require("mysql");
 
-    var connection;
 
-    function connect() {
-        connection = mysql.createConnection({
-            host: config.db_host,
-            user: config.db_user,
-            password: config.db_password,
-            database: config.db_name
 
-        });
-    }
 
-    connect();
+    var pool = mysql.createPool({
+        host: config.db_host,
+        user: config.db_user,
+        password: config.db_password,
+        database: config.db_name
+    });
 
-    setInterval(function () {
-        connection.end();
-        connect();
-    }, 1000*60*60*5);
+    var getConnection = function (callback) {
+        pool.getConnection(function (err, connection) {
+            if (!err) {
+                callback(connection);
+            } else {
+                console.log("ERROR WITH POOLS!");
+                callback(null);
+            }
+        })
+    };
 
-    module.exports = connection;
+    module.exports.getConnection = getConnection;
 }());

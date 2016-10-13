@@ -3,13 +3,25 @@
  */
 (function () {
     "use strict";
-    var db = require("../db-connector"),
-        escape = require("escape-html"),
+    var escape = require("escape-html"),
         utils = require("./utils"),
-        reminder;
+        reminder,
+        dbConnector = require("../db-connector"),
+        db;
+
+    function updateConnection () {
+        dbConnector.getConnection(function (conn) {
+            if (conn != null) {
+                db = conn;
+            }
+        });
+    }
+
+    updateConnection();
 
     reminder = {
         hasAccess: function (reminderId, user, callback) {
+            updateConnection();
             db.query("SELECT * FROM Reminder INNER JOIN List ON List.id = Reminder.list WHERE Reminder.id = ? AND List.user = ?", [reminderId, user], function (err, results) {
                 if (!err && results.length === 1) {
                     callback(true);
@@ -20,6 +32,7 @@
         },
 
         view: function (reminderId, user, callback) {
+            updateConnection();
             reminder.hasAccess(reminderId, user, function (access) {
                 if (access) {
                     db.query("SELECT * FROM Reminder WHERE id = ?", reminderId, function (err, results) {
@@ -49,6 +62,7 @@
         },
 
         update: function (name, priority, done, reminderId, user, callback) {
+            updateConnection();
             var modifiedReminder = {};
             var nameRegex = /^.{1,140}$/;
             var invalidParameters = false;
@@ -113,6 +127,7 @@
         },
 
         delete: function (reminderId, user, callback) {
+            updateConnection();
             reminder.hasAccess(reminderId, user, function (access) {
                 if (access) {
                     db.query("DELETE FROM Reminder WHERE id = ?", reminderId, function (err, results) {

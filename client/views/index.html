@@ -2,7 +2,7 @@
     <strong>Error {{ error.code }}</strong> {{ error.message }}
 </div>
 
-<h1 class="sortable" data-ng-click="sortLists()">Your lists</h1>
+<h1 class="clickable" data-ng-click="sortLists()">Your lists</h1>
 <form class="add-list" data-ng-submit="addList()">
     <div class="input-group">
         <input required type="text" class="form-control" data-ng-model="newlist" placeholder="Name for new list...">
@@ -14,18 +14,18 @@
 <span id="loading"><i class='fa fa-spinner fa-spin'></i> Processing your request...</span>
 <div data-ng-repeat="list in lists | orderBy:'name':sortListsReverse">
     <div class="panel panel-default">
-        <div class="panel-heading clearfix">
-            <span data-toggle="collapse" data-target="#list-{{list.id}}" class="pull-left panel-title">{{ list.name }}</span>
+        <div data-ng-click="toggleList(list.id)" class="panel-heading clearfix clickable">
+            <span class="pull-left panel-title">{{ list.name }}</span>
             <div class="btn-group pull-right">
-                <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#listEdit" data-ng-click="initializeListRenaming(list.id)">Modify</button>
-                <button class="btn btn-default btn-sm" data-ng-click="removeList(list.id)">Delete</button>
+                <button class="btn btn-default btn-sm" data-ng-click="initializeListRenaming(list.id); toggleModal('listEdit'); $event.stopPropagation();">Modify</button>
+                <button class="btn btn-default btn-sm" data-ng-click="removeList(list.id); $event.stopPropagation();">Delete</button>
             </div>
         </div>
-        <div id="list-{{list.id}}" class="panel-body collapse {{list.open ? 'in' : ''}}">
+        <div id="list-{{list.id}}" class="panel-body{{list.open ? '' : ' collapse'}}">
             <div data-ng-if="list.reminders.length > 0" class="row reminder reminder-header">
-                <div class="col-xs-1 sortable" data-ng-click="sortReminders('done')">Done</div>
-                <div class="col-xs-7 sortable" data-ng-click="sortReminders('name')">Name</div>
-                <div class="col-xs-1 sortable" data-ng-click="sortReminders('priority')">Priority</div>
+                <div class="col-xs-1 clickable" data-ng-click="sortReminders('done')">Done</div>
+                <div class="col-xs-7 clickable" data-ng-click="sortReminders('name')">Name</div>
+                <div class="col-xs-1 clickable" data-ng-click="sortReminders('priority')">Priority</div>
             </div>
             <div class="row reminder" data-ng-repeat="reminder in list.reminders | orderBy:sortRemindersBy:sortRemindersReverse">
                 <div class="col-xs-1">
@@ -114,10 +114,7 @@
     .add-list {
         margin-bottom: 20px;
     }
-    .panel-title {
-        cursor: pointer;
-    }
-    .sortable {
+    .clickable {
         cursor: pointer;
     }
 </style>
