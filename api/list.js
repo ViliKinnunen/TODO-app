@@ -3,25 +3,13 @@
  */
 (function () {
     "use strict";
-    var escape = require("escape-html"),
+    var db = require("../db-connector"),
+        escape = require("escape-html"),
         utils = require("./utils"),
-        list,
-        dbConnector = require("../db-connector"),
-        db;
-
-    function updateConnection () {
-        dbConnector.getConnection(function (conn) {
-            if (conn != null) {
-                db = conn;
-            }
-        });
-    }
-
-    updateConnection();
+        list;
 
     list = {
         hasAccess: function (listId, user, callback) {
-            updateConnection();
             db.query("SELECT * FROM List WHERE id = ? AND user = ?", [listId, user], function (err, results) {
                 if (!err && results.length === 1) {
                     callback(true);
@@ -32,7 +20,6 @@
         },
 
         getName: function (listId, user, callback) {
-            updateConnection();
             list.hasAccess(listId, user, function (access) {
                 if (access) {
                     db.query("SELECT * FROM List WHERE id = ?", listId, function (err, results) {
@@ -55,7 +42,6 @@
         },
 
         getReminders: function (listId, user, callback) {
-            updateConnection();
             list.hasAccess(listId, user, function (access) {
                 if (access) {
                     db.query("SELECT id, name, priority, done FROM Reminder WHERE list = ?", listId, function (err, results) {
@@ -78,7 +64,6 @@
         },
 
         addReminder: function (name, priority, listId, user, callback) {
-            updateConnection();
             var nameRegex = /^.{1,140}$/;
             if (name.match(nameRegex)) {
                 list.hasAccess(listId, user, function (access) {
@@ -109,7 +94,6 @@
         },
 
         delete: function (listId, user, callback) {
-            updateConnection();
             list.hasAccess(listId, user, function (access) {
                 if (access) {
                     db.query("DELETE FROM List WHERE id = ?", listId, function (err, results) {
@@ -139,7 +123,6 @@
         },
 
         rename: function (newName, listId, user, callback) {
-            updateConnection();
             var regexName = /^.{2,50}$/;
             if (newName.match(regexName)) {
                 list.hasAccess(listId, user, function (access) {

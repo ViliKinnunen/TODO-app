@@ -37,6 +37,10 @@
             $("#"+modalId).modal("show");
         };
 
+        $scope.toggleArrow = function (arrowId) {
+            $("#arrow-"+arrowId).toggleClass("arrow-up");
+        };
+
         $http.defaults.headers.common['x-access-token']= $rootScope.token;
 
         $scope.updateLists = function() {
