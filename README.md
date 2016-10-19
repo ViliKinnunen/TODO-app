@@ -10,4 +10,8 @@ Screencast URL: https://drive.google.com/file/d/0BzLCiD-huyGkSG8td3U0VVlGMUE/vie
 
 ## Frontend
 
-Screencast coming up...
+Screencast URL: https://drive.google.com/file/d/0BzLCiD-huyGkR2RTUDBRRWtaSTQ/view?usp=sharing
+
+## Self-evaluation
+
+Modest 18/15
