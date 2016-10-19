@@ -23,28 +23,30 @@
             </div>
         </div>
         <div id="list-{{list.id}}" class="panel-body{{list.open ? '' : ' collapse'}}">
-            <div data-ng-if="list.reminders.length > 0" class="row reminder reminder-header">
+            <div data-ng-if="list.reminders.length > 0" class="row hidden-xs reminder reminder-header">
                 <div class="col-xs-1 clickable" data-ng-click="sortReminders('done')">Done</div>
-                <div class="col-xs-7 clickable" data-ng-click="sortReminders('name')">Name</div>
-                <div class="col-xs-1 clickable" data-ng-click="sortReminders('priority')">Priority</div>
+                <div class="col-xs-5 clickable" data-ng-click="sortReminders('name')">Name</div>
+                <div class="col-xs-3 clickable" data-ng-click="sortReminders('priority')">Priority</div>
             </div>
             <div class="row reminder" data-ng-repeat="reminder in list.reminders | orderBy:sortRemindersBy:sortRemindersReverse">
                 <div class="col-xs-1">
                     <input id="{{reminder.id}}-checkbox" data-ng-change="toggleReminder(reminder, list.id)"
                            type="checkbox" data-ng-model="reminder.done" data-ng-true-value="1"
-                           data-ng-false-value="0"/>
+                           data-ng-false-value="0" class="vertical-center"/>
                 </div>
-                <div class="col-xs-7">
-                    <label for="{{reminder.id}}-checkbox">{{ reminder.name }}</label>
+                <div class="col-xs-5">
+                    <label for="{{reminder.id}}-checkbox" class="vertical-center">{{ reminder.name }}</label>
                 </div>
                 <div class="col-xs-1">
-                    {{ reminder.priority }}
+                    <span class="vertical-center">{{ reminder.priority }}</span>
                 </div>
-                <div class="col-xs-3">
-                    <div class="btn-group pull-right">
-                        <button class="btn btn-xs btn-default" data-toggle="modal" data-target="#reminderEdit" data-ng-click="initializeReminderEdit(reminder.id, list.id)">Modify</button>
+                <div class="col-xs-5">
+                    <div class="btn-group pull-right vertical-center">
+                        <button class="btn btn-xs btn-default" data-toggle="modal" data-target="#reminderEdit" data-ng-click="initializeReminderEdit(reminder.id, list.id)">
+                            <span class="visible-xs glyphicon glyphicon-pencil"></span><span class="hidden-xs">Modify</span>
+                        </button>
                         <button class="btn btn-xs btn-danger" data-ng-click="removeReminder(reminder.id, list.id)">
-                            Delete
+                            <span class="visible-xs glyphicon glyphicon-trash"></span><span class="hidden-xs">Delete</span>
                         </button>
                     </div>
                 </div>
@@ -125,5 +127,9 @@
 
     .arrow-up {
         transform: rotate(-90deg);
+    }
+
+    .vertical-center {
+        vertical-align: center;
     }
 </style>
